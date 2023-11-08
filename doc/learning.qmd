@@ -4,6 +4,10 @@ author: "Your Name"
 format: html
 execute:
   echo: true
+editor:
+    markdown:
+        wrap: 72
+        canonical: TRUE
 ---
 
 ## Header 1
@@ -17,3 +21,10 @@ knitr::opts_chunk$set(echo = TRUE)
 # Code chunk
 ```
 
+## This is poorly formated
+
+creating a poorly formatted listed.
+
+-   this is item 1
+-   this is item 2
+-   this is item 3

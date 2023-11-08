@@ -1,26 +1,37 @@
-TODO: Add more to the title of your project here
+---
+title: "Project README files"
+editor_options:
+  markdown:
+    wrap: 72
+    canonical: true
+---
 
-# AdvancedR3:
+TODO: Add more to the title of your project here DONE
 
-TODO: Give a brief description of what your project is about
+# AdvancedR3: learning that collaborative code
 
-This project...
+TODO: Give a brief description of what your project is about DONE
+
+This project contain the toll's and data for the advanced R3 course
+november 2023.
 
 # Brief description of folder and file contents
 
-TODO: As project evolves, add brief description of what is inside the data, doc and R folders.
+TODO: As project evolves, add brief description of what is inside the
+data, doc and R folders. DONE
 
 The following folders contain:
 
-- `data/`:
-- `doc/`:
-- `R/`:
+-   `data/`: out put data from the analysis
+-   `doc/`: code files in .doc format and results document
+-   `R/`: R fucntions
 
 # Installing project R package dependencies
 
-If dependencies have been managed by using `usethis::use_package("packagename")`
-through the `DESCRIPTION` file, installing dependencies is as easy as opening the
-`AdvancedR3.Rproj` file and running this command in the console:
+If dependencies have been managed by using
+`usethis::use_package("packagename")` through the `DESCRIPTION` file,
+installing dependencies is as easy as opening the `AdvancedR3.Rproj`
+file and running this command in the console:
 
     # install.packages("remotes")
     remotes::install_deps()
