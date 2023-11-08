@@ -4,4 +4,8 @@ options(
     ranv.config.pak.enabled = TRUE
 )
 
+if (interactive()) {
+    suppressMessages(require(usethis))
+}
+
 source("renv/activate.R")
