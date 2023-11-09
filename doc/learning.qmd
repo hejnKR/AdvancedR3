@@ -10,21 +10,14 @@ editor:
         canonical: TRUE
 ---
 
-## Header 1
-
 ```{r setup}
-#| include: false
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+source(here::here("R/functions.R"))
+lipidomics <- read_csv(here::here("data/lipidomics.csv"))
 ```
 
-```{r}
-# Code chunk
+## Basic statistcis
+
+```{r basic-stats}
+descriptive_stats(lipidomics)
 ```
-
-## This is poorly formated
-
-creating a poorly formatted listed.
-
--   this is item 1
--   this is item 2
--   this is item 3
