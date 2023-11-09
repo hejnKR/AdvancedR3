@@ -5,11 +5,11 @@
 
 # Load packages required to define the pipeline:
 library(targets)
-# library(tarchetypes) # Load other packages as needed.
+library(tarchetypes) # library(tarchetypes) # Load other packages as needed.
 
 # Set target options:
 tar_option_set(
-  packages = unique(renv::dependencies(quiet = TRUE)$Packages) # packages that your targets need to run
+  packages = unique(renv::dependencies(quiet = TRUE)$Package) # packages that your targets need to run
   # format = "qs", # Optionally set the default storage format. qs is fast.
   #
   # For distributed computing in tar_make(), supply a {crew} controller
@@ -61,5 +61,13 @@ list(
   tar_target(
     name = df_stats_by_metabolite,
     command = descriptive_stats(lipidomics)
+  ),
+  tar_target(
+      name = fig_metabolite_distribution_plot,
+      command = plot_distribution(lipidomics)
+  ),
+  tar_quarto(
+      name = quarto_doc,
+      path = "doc/learning.qmd"
   )
 )

@@ -11,17 +11,21 @@ editor:
 ---
 
 ```{r setup}
+targets::tar_config_set(store = here::here("_targets"))
 library(tidyverse)
-source(here::here("R/functions.R"))
-lipidomics <- read_csv(here::here("data/lipidomics.csv"))
+library(targets)
+lipidomics <- tar_read(lipidomics)
 ```
 
-## Basic statistcis
+## Results
 
 ```{r basic-stats}
-descriptive_stats(lipidomics)
+tar_read(df_stats_by_metabolite) %>% 
+    mutate(MeanSD = glue::glue("{value_mean} ({value_sd})")) %>% 
+    select(Metabolite = metabolite, `Mean SD` = MeanSD) %>% 
+    knitr::kable(caption = "Descriptive statistics of the metabolites.")
 ```
 
 ```{r histogram-metabolites}
-plot_distribution(lipidomics)
+tar_read(fig_metabolite_distribution_plot)
 ```
