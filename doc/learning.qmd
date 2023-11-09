@@ -21,3 +21,7 @@ lipidomics <- read_csv(here::here("data/lipidomics.csv"))
 ```{r basic-stats}
 descriptive_stats(lipidomics)
 ```
+
+```{r histogram-metabolites}
+plot_distribution(lipidomics)
+```
