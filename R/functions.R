@@ -134,3 +134,20 @@ add_original_metabolite_names <- function(model_results, df) {
     dplyr::distinct(term, metabolite) %>%
     dplyr::right_join(model_results, by = "term")
 }
+
+#' claculate etsimate and make nice
+#'
+#' @param df with lipidomics data
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calculate_estimates <- function(df){
+    df %>%
+        split_by_metabolite() %>%
+        purrr::map(generate_model_results) %>%
+        purrr::list_rbind() %>%
+        dplyr::filter(stringr::str_detect(term, "metabolite_")) %>%
+        add_original_metabolite_names(df)
+}

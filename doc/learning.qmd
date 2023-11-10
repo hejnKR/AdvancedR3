@@ -71,17 +71,7 @@ lipidomics %>% split_by_metabolite()
 ```
 
 ```{r}
-model_estimates <- lipidomics %>%
-    split_by_metabolite() %>%
-    map(generate_model_results) %>% 
-    list_rbind() %>%
-    filter(str_detect(term, "metabolite_"))
-
-model_estimates
+calculate_estimates(lipidomics)
 ```
 
-```{r}
-
-
-```
 
