@@ -10,7 +10,13 @@ website:
         text: "Report"
 format:
   html:
-    theme: pulse
+    theme: quartz
 knitr:
   opts_chunk:
-    echo: FALSE
+    echo: false
+editor:
+    markdown:
+        wrap: 72
+        canonical: true
+execute:
+  freeze: auto

@@ -4,13 +4,6 @@ author:
   - name: Kamilla Holtmann Hejn
     affiliations:
       - name: Biochemistry and Molecular Biology
-format: html
-execute:
-  echo: true
-editor:
-    markdown:
-        wrap: 72
-        canonical: TRUE
 ---
 
 ```{r setup}
