@@ -64,3 +64,24 @@ create_model_workflow(
   fit(lipidomics_wide) %>%
   tidy_model_output()
 ```
+
+## Running multiple model
+```{r}
+lipidomics %>% split_by_metabolite()
+```
+
+```{r}
+model_estimates <- lipidomics %>%
+    split_by_metabolite() %>%
+    map(generate_model_results) %>% 
+    list_rbind() %>%
+    filter(str_detect(term, "metabolite_"))
+
+model_estimates
+```
+
+```{r}
+
+
+```
+

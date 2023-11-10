@@ -87,3 +87,50 @@ tidy_model_output <- function(workflow_fitted_model) {
     workflows::extract_fit_parsnip() %>%
     broom::tidy(exponentiate = TRUE)
 }
+
+#' converte long format to wide split by metabolite
+#'
+#' @param df long format df with metabolite column
+#'
+#' @return list of wide form df for each metabolite
+#'
+split_by_metabolite <- function(df) {
+  df %>%
+    column_values_to_snake_case(metabolite) %>%
+    dplyr::group_split(metabolite) %>%
+    purrr::map(metabolites_to_wider)
+}
+
+#' Generated results for the glm model for each metabolite
+#'
+#' @param df long format with metabolite column
+#'
+#' @return df
+#'
+generate_model_results <- function(df) {
+  create_model_workflow(
+    parsnip::logistic_reg() %>%
+      parsnip::set_engine("glm"),
+    df %>%
+      create_recipe_spec(tidyselect::starts_with("metabolite_"))
+  ) %>%
+    parsnip::fit(df) %>%
+    tidy_model_output()
+}
+
+#' add orginal metabolite names to model results
+#'
+#' @param model_results df with statictic model results
+#' @param df original data
+#'
+#' @return table
+#'
+add_original_metabolite_names <- function(model_results, df) {
+  df %>%
+    dplyr::select(metabolite) %>%
+    dplyr::mutate(term = metabolite) %>%
+    column_values_to_snake_case(term) %>%
+    dplyr::mutate(term = stringr::str_c("metabolite_", term)) %>%
+    dplyr::distinct(term, metabolite) %>%
+    dplyr::right_join(model_results, by = "term")
+}
