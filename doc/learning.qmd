@@ -1,6 +1,9 @@
 ---
 title: "Draft Quarto document"
-author: "Your Name"
+author:
+  - name: Kamilla Holtmann Hejn
+    affiliations:
+      - name: Biochemistry and Molecular Biology
 format: html
 execute:
   echo: true
@@ -65,5 +68,3 @@ plot_estimates(model_estimates)
 ```{r}
 tar_read(plot_model_estimates)
 ```
-
-
