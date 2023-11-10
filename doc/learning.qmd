@@ -34,44 +34,36 @@ tar_read(fig_metabolite_distribution_plot)
 
 ## Building the model
 
+### Running multiple model
 ```{r}
-log_reg_specs <- logistic_reg() %>%
-  set_engine("glm")
-
-log_reg_specs
-```
-
-```{r tidying-data-for-statistics}
-lipidomics_wide <- lipidomics %>%
-  column_values_to_snake_case(metabolite) %>%
-  metabolites_to_wider()
-```
-
-```{r creating-recipe-spec}
-recipe_specs <- lipidomics_wide %>%
-  create_recipe_spec(metabolite_cholesterol)
-
-recipe_specs
+model_estimates <- lipidomics %>%
+  split_by_metabolite() %>%
+  map(generate_model_results) %>%
+  list_rbind() %>%
+  filter(str_detect(term, "metabolite_"))
+model_estimates
 ```
 
 ```{r}
-create_model_workflow(
-  logistic_reg() %>%
-    set_engine("glm"),
-  lipidomics_wide %>%
-    create_recipe_spec(metabolite_lipid_ch_3_1)
-) %>%
-  fit(lipidomics_wide) %>%
-  tidy_model_output()
+lipidomics %>%
+  split_by_metabolite() %>%
+  purrr::map(generate_model_results) %>%
+  purrr::list_rbind() %>%
+  dplyr::filter(stringr::str_detect(term, "metabolite_")) %>%
+  add_original_metabolite_names(lipidomics)
 ```
 
-## Running multiple model
+### figure of model estimates
 ```{r}
-lipidomics %>% split_by_metabolite()
+model_estimates <- targets::tar_read(df_model_estimates)
 ```
 
 ```{r}
-calculate_estimates(lipidomics)
+plot_estimates(model_estimates)
+```
+
+```{r}
+tar_read(plot_model_estimates)
 ```
 
 

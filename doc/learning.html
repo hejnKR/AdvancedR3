@@ -162,7 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ✖ dplyr::lag()      masks stats::lag()
 ✖ yardstick::spec() masks readr::spec()
 ✖ recipes::step()   masks stats::step()
-• Search for functions across packages at https://www.tidymodels.org/find/</code></pre>
+• Dig deeper into tidy modeling with R at https://www.tmwr.org</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"R/functions.R"</span>))</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>lipidomics <span class="ot">&lt;-</span> <span class="fu">tar_read</span>(lipidomics)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -248,277 +248,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="building-the-model" class="level2">
 <h2 class="anchored" data-anchor-id="building-the-model">Building the model</h2>
+<section id="running-multiple-model" class="level3">
+<h3 class="anchored" data-anchor-id="running-multiple-model">Running multiple model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>log_reg_specs <span class="ot">&lt;-</span> <span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"glm"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>log_reg_specs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>model_estimates <span class="ot">&lt;-</span> lipidomics <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_metabolite</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(generate_model_results) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list_rbind</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(term, <span class="st">"metabolite_"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: algorithm did not converge</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model_estimates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Logistic Regression Model Specification (classification)
-
-Computational engine: glm </code></pre>
+<pre><code># A tibble: 12 × 5
+   term                                 estimate  std.error statistic p.value
+   &lt;chr&gt;                                   &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+ 1 metabolite_cd_cl_3_solvent          8.70e-  2      0.865 -2.82     0.00475
+ 2 metabolite_cholesterol              2.97e+  0      0.458  2.38     0.0175 
+ 3 metabolite_fa_ch_2_ch_2_coo         1.52e+  0      0.387  1.09     0.276  
+ 4 metabolite_lipid_ch_2               2.59e-  3      3.14  -1.90     0.0578 
+ 5 metabolite_lipid_ch_3_1             4.45e+  1      1.41   2.70     0.00697
+ 6 metabolite_lipid_ch_3_2             8.85e-  1      0.361 -0.339    0.734  
+ 7 metabolite_mufa_pufa                4.56e-  1      0.449 -1.75     0.0798 
+ 8 metabolite_phosphatidycholine       1.28e-120 116628.    -0.00237  0.998  
+ 9 metabolite_phosphatidylethanolamine 2.69e+  1      1.32   2.49     0.0129 
+10 metabolite_phospholipids            2.39e- 19  68964.    -0.000622 1.00   
+11 metabolite_pufa                     3.27e+  0      0.560  2.11     0.0345 
+12 metabolite_tms_interntal_standard   5.62e-  2      0.990 -2.91     0.00363</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lipidomics_wide <span class="ot">&lt;-</span> lipidomics <span class="sc">%&gt;%</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">column_values_to_snake_case</span>(metabolite) <span class="sc">%&gt;%</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">metabolites_to_wider</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>recipe_specs <span class="ot">&lt;-</span> lipidomics_wide <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">create_recipe_spec</span>(metabolite_cholesterol)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>recipe_specs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Recipe ──────────────────────────────────────────────────────────────────────</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Inputs </code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Number of variables by role</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>outcome:          1
-predictor:        3
-undeclared role: 12</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code></code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Operations </code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>• Centering and scaling for: tidyselect::starts_with("metabolite_")</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">create_model_workflow</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">logistic_reg</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set_engine</span>(<span class="st">"glm"</span>),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  lipidomics_wide <span class="sc">%&gt;%</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">create_recipe_spec</span>(metabolite_lipid_ch_3_1)</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(lipidomics_wide) <span class="sc">%&gt;%</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy_model_output</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4 × 5
-  term                    estimate std.error statistic p.value
-  &lt;chr&gt;                      &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
-1 (Intercept)                6.90     2.17       0.891 0.373  
-2 genderW                    2.27     1.25       0.657 0.511  
-3 age                        0.958    0.0558    -0.772 0.440  
-4 metabolite_lipid_ch_3_1   44.5      1.41       2.70  0.00697</code></pre>
-</div>
-</div>
-</section>
-<section id="running-multiple-model" class="level2">
-<h2 class="anchored" data-anchor-id="running-multiple-model">Running multiple model</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lipidomics <span class="sc">%&gt;%</span> <span class="fu">split_by_metabolite</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[1]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_cd_cl_3_solvent
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                      &lt;dbl&gt;
- 1 ERI109 M         25 CT                          166.
- 2 ERI111 M         39 CT                          171.
- 3 ERI163 W         58 CT                          262.
- 4 ERI375 M         24 CT                          172.
- 5 ERI376 M         26 CT                          300.
- 6 ERI391 M         31 CT                          241.
- 7 ERI392 M         24 CT                          172.
- 8 ERI79  W         26 CT                          148.
- 9 ERI81  M         52 CT                          168.
-10 ERI83  M         25 CT                          253.
-# ℹ 26 more rows
-
-[[2]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_cholesterol
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                  &lt;dbl&gt;
- 1 ERI109 M         25 CT                     18.6 
- 2 ERI111 M         39 CT                     20.8 
- 3 ERI163 W         58 CT                     15.5 
- 4 ERI375 M         24 CT                     10.2 
- 5 ERI376 M         26 CT                     13.5 
- 6 ERI391 M         31 CT                      9.53
- 7 ERI392 M         24 CT                      9.87
- 8 ERI79  W         26 CT                     17.6 
- 9 ERI81  M         52 CT                     17.0 
-10 ERI83  M         25 CT                     19.7 
-# ℹ 26 more rows
-
-[[3]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_fa_ch_2_ch_2_coo
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                       &lt;dbl&gt;
- 1 ERI109 M         25 CT                           31.6
- 2 ERI111 M         39 CT                           28.9
- 3 ERI163 W         58 CT                           36.6
- 4 ERI375 M         24 CT                           39.4
- 5 ERI376 M         26 CT                           52.1
- 6 ERI391 M         31 CT                           42.8
- 7 ERI392 M         24 CT                           39.9
- 8 ERI79  W         26 CT                           32.7
- 9 ERI81  M         52 CT                           28.4
-10 ERI83  M         25 CT                           26.5
-# ℹ 26 more rows
-
-[[4]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_lipid_ch_2
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                 &lt;dbl&gt;
- 1 ERI109 M         25 CT                     587.
- 2 ERI111 M         39 CT                     585.
- 3 ERI163 W         58 CT                     558.
- 4 ERI375 M         24 CT                     606.
- 5 ERI376 M         26 CT                     554.
- 6 ERI391 M         31 CT                     597.
- 7 ERI392 M         24 CT                     607.
- 8 ERI79  W         26 CT                     546.
- 9 ERI81  M         52 CT                     593.
-10 ERI83  M         25 CT                     606.
-# ℹ 26 more rows
-
-[[5]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_lipid_ch_3_1
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;
- 1 ERI109 M         25 CT                       44.1
- 2 ERI111 M         39 CT                       28.1
- 3 ERI163 W         58 CT                       75.1
- 4 ERI375 M         24 CT                       22.0
- 5 ERI376 M         26 CT                       29.5
- 6 ERI391 M         31 CT                       38.0
- 7 ERI392 M         24 CT                       34.8
- 8 ERI79  W         26 CT                      109. 
- 9 ERI81  M         52 CT                       49.6
-10 ERI83  M         25 CT                       29.9
-# ℹ 26 more rows
-
-[[6]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_lipid_ch_3_2
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;
- 1 ERI109 M         25 CT                       147.
- 2 ERI111 M         39 CT                       153.
- 3 ERI163 W         58 CT                       144.
- 4 ERI375 M         24 CT                       220.
- 5 ERI376 M         26 CT                       282.
- 6 ERI391 M         31 CT                       220.
- 7 ERI392 M         24 CT                       215.
- 8 ERI79  W         26 CT                       153.
- 9 ERI81  M         52 CT                       150.
-10 ERI83  M         25 CT                       153.
-# ℹ 26 more rows
-
-[[7]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_mufa_pufa
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                &lt;dbl&gt;
- 1 ERI109 M         25 CT                  50.6  
- 2 ERI111 M         39 CT                  53.2  
- 3 ERI163 W         58 CT                  60.7  
- 4 ERI375 M         24 CT                   0.532
- 5 ERI376 M         26 CT                   1.15 
- 6 ERI391 M         31 CT                   0.602
- 7 ERI392 M         24 CT                   0.422
- 8 ERI79  W         26 CT                  36.3  
- 9 ERI81  M         52 CT                  40.1  
-10 ERI83  M         25 CT                  39.3  
-# ℹ 26 more rows
-
-[[8]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_phosphatidycholine
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                         &lt;dbl&gt;
- 1 ERI109 M         25 CT                             41.7
- 2 ERI111 M         39 CT                             52.9
- 3 ERI163 W         58 CT                             35.3
- 4 ERI375 M         24 CT                             66.9
- 5 ERI376 M         26 CT                             32.7
- 6 ERI391 M         31 CT                             62.9
- 7 ERI392 M         24 CT                             64.3
- 8 ERI79  W         26 CT                             41.0
- 9 ERI81  M         52 CT                             56.1
-10 ERI83  M         25 CT                             57.8
-# ℹ 26 more rows
-
-[[9]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_phosphatidylethanolamine
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                               &lt;dbl&gt;
- 1 ERI109 M         25 CT                                   6.78
- 2 ERI111 M         39 CT                                   3.66
- 3 ERI163 W         58 CT                                   3.59
- 4 ERI375 M         24 CT                                   3.59
- 5 ERI376 M         26 CT                                   2.33
- 6 ERI391 M         31 CT                                   1.46
- 7 ERI392 M         24 CT                                   2.00
- 8 ERI79  W         26 CT                                   4.93
- 9 ERI81  M         52 CT                                   5.20
-10 ERI83  M         25 CT                                   5.01
-# ℹ 26 more rows
-
-[[10]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_phospholipids
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                    &lt;dbl&gt;
- 1 ERI109 M         25 CT                        5.58
- 2 ERI111 M         39 CT                        6.16
- 3 ERI163 W         58 CT                        5.19
- 4 ERI375 M         24 CT                        4.20
- 5 ERI376 M         26 CT                        3.27
- 6 ERI391 M         31 CT                        4.71
- 7 ERI392 M         24 CT                        4.14
- 8 ERI79  W         26 CT                        5.70
- 9 ERI81  M         52 CT                        5.46
-10 ERI83  M         25 CT                        4.89
-# ℹ 26 more rows
-
-[[11]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_pufa
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;
- 1 ERI109 M         25 CT              29.0 
- 2 ERI111 M         39 CT              27.4 
- 3 ERI163 W         58 CT              35.5 
- 4 ERI375 M         24 CT               6.92
- 5 ERI376 M         26 CT               3.22
- 6 ERI391 M         31 CT               3.43
- 7 ERI392 M         24 CT               3.52
- 8 ERI79  W         26 CT              18.7 
- 9 ERI81  M         52 CT              20.7 
-10 ERI83  M         25 CT              18.2 
-# ℹ 26 more rows
-
-[[12]]
-# A tibble: 36 × 5
-   code   gender   age class metabolite_tms_interntal_standard
-   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;                             &lt;dbl&gt;
- 1 ERI109 M         25 CT                                208. 
- 2 ERI111 M         39 CT                                219. 
- 3 ERI163 W         58 CT                                 57.1
- 4 ERI375 M         24 CT                                 19.2
- 5 ERI376 M         26 CT                                 35.4
- 6 ERI391 M         31 CT                                 30.4
- 7 ERI392 M         24 CT                                 21.7
- 8 ERI79  W         26 CT                                185. 
- 9 ERI81  M         52 CT                                207. 
-10 ERI83  M         25 CT                                322. 
-# ℹ 26 more rows</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_estimates</span>(lipidomics)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lipidomics <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_metabolite</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(generate_model_results) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">list_rbind</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(stringr<span class="sc">::</span><span class="fu">str_detect</span>(term, <span class="st">"metabolite_"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_original_metabolite_names</span>(lipidomics)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: glm.fit: algorithm did not converge</code></pre>
 </div>
@@ -545,6 +316,25 @@ Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
 12 metabolite_cd_cl_3_solvent   CDCl3 (so… 8.70e-  2   8.65e-1 -2.82     0.00475</code></pre>
 </div>
 </div>
+</section>
+<section id="figure-of-model-estimates" class="level3">
+<h3 class="anchored" data-anchor-id="figure-of-model-estimates">figure of model estimates</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>model_estimates <span class="ot">&lt;-</span> targets<span class="sc">::</span><span class="fu">tar_read</span>(df_model_estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_estimates</span>(model_estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="learning_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_read</span>(plot_model_estimates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="learning_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 </section>
 
 </main>
